@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meadow & Crest Realty Limited | Fine Homes & Investment Estates</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Leaflet Interactive Map CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Executive Top Bar -->
+  <div class="bg-[#071f18] text-white/80 text-xs py-2 px-4 border-b border-white/10">
+    <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-2">
+      <span>🏛️ <strong>Meadow & Crest Realty Limited</strong> — RC: • Ikoyi • Lekki Phase 1 • Victoria Island • Ikate • Osapa London • Maitama</span>
+      <div class="flex items-center gap-4">
+        <span>📞 +234 (0) 906 386 2966</span>
+        <a href="pages/admin.html" class="text-[#d4af37] font-semibold hover:underline">🔐 Executive Admin Portal</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Header -->
+  <header class="sticky top-0 z-30 bg-[#0d3327]/95 backdrop-blur-md text-white border-b border-[#d4af37]/30">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
+      <a href="index.html" class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg bg-[#d4af37] text-[#071f18] flex items-center justify-center font-serif-luxury font-bold text-xl shadow">M&C</div>
+        <div>
+          <span class="font-serif-luxury text-xl md:text-2xl font-bold tracking-wide text-white block leading-none">MEADOW & CREST</span>
+          <span class="text-[10px] uppercase tracking-[0.25em] text-[#d4af37] block mt-0.5">Realty Limited</span>
+        </div>
+      </a>
+
+      <!-- Multi-Page Navigation Links -->
+      <nav class="hidden md:flex items-center gap-6 text-xs uppercase tracking-wider font-semibold">
+        <a href="index.html" class="text-[#d4af37] border-b-2 border-[#d4af37] pb-1">Properties & Map</a>
+        <a href="pages/about.html" class="text-white/80 hover:text-[#d4af37] transition">About Firm</a>
+        <a href="pages/advisors.html" class="text-white/80 hover:text-[#d4af37] transition">Wealth Advisors</a>
+        <a href="pages/contact.html" class="text-white/80 hover:text-[#d4af37] transition">Private Offices</a>
+        <a href="pages/admin.html" class="text-white/80 hover:text-[#d4af37] transition">Admin Panel</a>
+      </nav>
+
+      <!-- Actions -->
+      <div class="flex items-center gap-2.5">
+        <button id="currencyToggle" class="px-3 py-1.5 rounded-lg border border-[#d4af37]/50 text-xs font-semibold text-[#d4af37] hover:bg-[#d4af37] hover:text-[#071f18] transition">
+          <span id="currencyLabel">₦ NGN</span>
+        </button>
+
+        <button onclick="toggleSavedDrawer()" class="relative px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-medium flex items-center gap-1.5">
+          <span>❤️ Saved</span>
+          <span id="savedBadge" class="px-1.5 py-0.5 rounded-full bg-[#d4af37] text-[#071f18] font-bold text-[10px]">0</span>
+        </button>
+
+        <button onclick="openListModal()" class="px-3.5 py-2 rounded-lg bg-[#d4af37] hover:bg-[#b89225] text-[#071f18] font-bold text-xs uppercase tracking-wider transition">
+          + List Property
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="relative bg-[#071f18] text-white py-12 md:py-16 px-4 overflow-hidden">
+    <div class="absolute inset-0 opacity-25 bg-[url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1800&q=80')] bg-cover bg-center"></div>
+    <div class="relative max-w-6xl mx-auto text-center">
+      <span class="inline-block px-4 py-1 rounded-full bg-[#d4af37]/20 border border-[#d4af37]/40 text-[#d4af37] text-xs uppercase tracking-widest mb-3">
+        Meadow & Crest Realty Limited • Interactive Map & Verified Portfolio
+      </span>
+      <h1 class="font-serif-luxury text-4xl md:text-5xl font-bold max-w-3xl mx-auto leading-tight">
+        Acquire Exceptional Residences & Sovereign Estates
+      </h1>
+
+      <!-- Buy / Rent / Short-Let Tabs -->
+      <div class="inline-flex bg-white/10 backdrop-blur-md p-1.5 rounded-xl mt-6 border border-white/15">
+        <button data-category="All" class="category-tab px-5 py-2 rounded-lg text-xs uppercase tracking-wider bg-[#d4af37] text-[#071f18] font-bold transition">All Listings</button>
+        <button data-category="Buy" class="category-tab px-5 py-2 rounded-lg text-xs uppercase tracking-wider text-white/80 hover:text-white transition">Buy a House</button>
+        <button data-category="Rent" class="category-tab px-5 py-2 rounded-lg text-xs uppercase tracking-wider text-white/80 hover:text-white transition">Rent / Lease</button>
+        <button data-category="Short-Let" class="category-tab px-5 py-2 rounded-lg text-xs uppercase tracking-wider text-white/80 hover:text-white transition">Short-Let</button>
+      </div>
+
+      <!-- Filter Bar -->
+      <div class="bg-white text-gray-800 p-4 rounded-2xl shadow-2xl mt-6 grid grid-cols-1 md:grid-cols-5 gap-3 text-left">
+        <div>
+          <label class="text-[11px] font-bold uppercase text-gray-400">Keyword / Estate</label>
+          <input id="searchInput" type="text" placeholder="e.g. Banana Island, Pool..." class="w-full mt-1 text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-[#0d3327]" />
+        </div>
+        <div>
+          <label class="text-[11px] font-bold uppercase text-gray-400">Location</label>
+          <select id="locationFilter" class="w-full mt-1 text-sm border border-gray-200 rounded-lg px-3 py-2">
+            <option value="All">All Prime Locations</option>
+            <option value="Ikoyi / Banana Island">Ikoyi / Banana Island</option>
+            <option value="Lekki Phase 1">Lekki Phase 1</option>
+            <option value="Victoria Island">Victoria Island</option>
+            <option value="Ikeja GRA">Ikeja GRA</option>
+            <option value="Maitama Abuja">Maitama Abuja</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-[11px] font-bold uppercase text-gray-400">Property Type</label>
+          <select id="typeFilter" class="w-full mt-1 text-sm border border-gray-200 rounded-lg px-3 py-2">
+            <option value="All">All Property Types</option>
+            <option value="Detached Duplex">Detached Duplex</option>
+            <option value="Waterfront Mansion">Waterfront Mansion</option>
+            <option value="Villa">Villa</option>
+            <option value="Penthouse">Penthouse</option>
+            <option value="Luxury Apartment">Luxury Apartment</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-[11px] font-bold uppercase text-gray-400">Price Range (NGN)</label>
+          <select id="budgetFilter" class="w-full mt-1 text-sm border border-gray-200 rounded-lg px-3 py-2">
+            <option value="All">Any Price Range</option>
+            <option value="under100m">Under ₦100M</option>
+            <option value="100m-500m">₦100M – ₦500M</option>
+            <option value="500m-1.5b">₦500M – ₦1.5B</option>
+            <option value="above1.5b">Above ₦1.5B</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-[11px] font-bold uppercase text-gray-400">Min. Bedrooms</label>
+          <select id="bedsFilter" class="w-full mt-1 text-sm border border-gray-200 rounded-lg px-3 py-2">
+            <option value="0">Any Bedrooms</option>
+            <option value="3">3+ Bedrooms</option>
+            <option value="4">4+ Bedrooms</option>
+            <option value="5">5+ Bedrooms</option>
+            <option value="6">6+ Bedrooms</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Listings & Interactive Map Section -->
+  <main class="max-w-[1440px] mx-auto px-4 py-8 flex-1 w-full">
+    <!-- Top Controls: Amenity Pills + View Mode Switcher -->
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+      <div class="flex flex-wrap gap-2">
+        <button data-amenity="All" class="amenity-pill px-3.5 py-1.5 rounded-full text-xs font-semibold border bg-[#0d3327] text-[#d4af37] border-[#d4af37]">All Amenities</button>
+        <button data-amenity="Swimming Pool" class="amenity-pill px-3.5 py-1.5 rounded-full text-xs font-semibold border bg-white text-gray-700 border-gray-200">🏊 Swimming Pool</button>
+        <button data-amenity="24/7 Power" class="amenity-pill px-3.5 py-1.5 rounded-full text-xs font-semibold border bg-white text-gray-700 border-gray-200">⚡ 24/7 Power</button>
+        <button data-amenity="BQ" class="amenity-pill px-3.5 py-1.5 rounded-full text-xs font-semibold border bg-white text-gray-700 border-gray-200">🏠 Boys Quarters (BQ)</button>
+        <button data-amenity="Waterfront" class="amenity-pill px-3.5 py-1.5 rounded-full text-xs font-semibold border bg-white text-gray-700 border-gray-200">🌊 Waterfront</button>
+        <button data-amenity="Smart Home" class="amenity-pill px-3.5 py-1.5 rounded-full text-xs font-semibold border bg-white text-gray-700 border-gray-200">🤖 Smart Home</button>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <p id="resultCount" class="text-xs font-bold uppercase tracking-wider text-[#0d3327]">6 Exclusive Mandates Found</p>
+        <div class="inline-flex rounded-xl border border-gray-300 overflow-hidden text-xs font-semibold">
+          <button id="btnViewGrid" onclick="setViewMode('grid')" class="px-3 py-1.5 bg-white text-gray-700">⊞ Grid Only</button>
+          <button id="btnViewSplit" onclick="setViewMode('split')" class="px-3 py-1.5 bg-[#071f18] text-[#d4af37]">🗺️ Split + Map</button>
+          <button id="btnViewMap" onclick="setViewMode('map')" class="px-3 py-1.5 bg-white text-gray-700">📍 Full Map</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Split Container: Property Cards (Left) + Interactive Map (Right) -->
+    <div class="flex flex-col lg:flex-row gap-6 items-start">
+      <!-- Cards Column -->
+      <div id="gridWrapper" class="w-full lg:w-7/12">
+        <div id="propertyGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+      </div>
+
+      <!-- Interactive Map Column -->
+      <div id="mapWrapper" class="w-full lg:w-5/12 lg:sticky lg:top-24 h-[520px] lg:h-[calc(100vh-120px)] flex flex-col bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden">
+        <!-- Quick Region Jump Buttons -->
+        <div class="bg-[#071f18] text-white px-3 py-2.5 flex flex-wrap items-center justify-between gap-2 text-[11px]">
+          <span class="text-[#d4af37] font-bold uppercase tracking-wider">Jump to District:</span>
+          <div class="flex flex-wrap gap-1.5">
+            <button onclick="flyToRegion(6.4646, 3.4508, 14)" class="px-2 py-1 rounded bg-white/10 hover:bg-[#d4af37] hover:text-[#071f18] transition">Ikoyi / Banana Island</button>
+            <button onclick="flyToRegion(6.4478, 3.4723, 14)" class="px-2 py-1 rounded bg-white/10 hover:bg-[#d4af37] hover:text-[#071f18] transition">Lekki Ph 1</button>
+            <button onclick="flyToRegion(6.4281, 3.4219, 14)" class="px-2 py-1 rounded bg-white/10 hover:bg-[#d4af37] hover:text-[#071f18] transition">Victoria Island</button>
+            <button onclick="flyToRegion(6.5818, 3.3565, 14)" class="px-2 py-1 rounded bg-white/10 hover:bg-[#d4af37] hover:text-[#071f18] transition">Ikeja GRA</button>
+            <button onclick="flyToRegion(9.0882, 7.4934, 14)" class="px-2 py-1 rounded bg-white/10 hover:bg-[#d4af37] hover:text-[#071f18] transition">Maitama Abuja</button>
+          </div>
+        </div>
+        <!-- Leaflet Map Canvas -->
+        <div id="propertyMap" class="w-full flex-1 z-10"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Property Detail Modal -->
+  <div id="propertyModal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-4xl w-full overflow-hidden shadow-2xl my-8 max-h-[92vh] overflow-y-auto">
+      <div class="relative h-80 md:h-96 bg-gray-900">
+        <img id="modalMainImage" src="" alt="Property" class="w-full h-full object-cover" />
+        <button onclick="prevModalImage()" class="absolute left-4 top-1/2 -translate-y-1/2 bg-black/60 text-white w-10 h-10 rounded-full">❮</button>
+        <button onclick="nextModalImage()" class="absolute right-4 top-1/2 -translate-y-1/2 bg-black/60 text-white w-10 h-10 rounded-full">❯</button>
+        <button onclick="closePropertyModal()" class="absolute top-4 right-4 bg-white text-gray-900 w-9 h-9 rounded-full font-bold shadow">✕</button>
+        <div class="absolute bottom-4 left-4 flex gap-2">
+          <span id="modalCategory" class="px-3 py-1 rounded-full text-xs font-bold bg-[#d4af37] text-[#071f18]"></span>
+          <span id="modalTitleDoc" class="px-3 py-1 rounded-full text-xs font-bold bg-white text-[#071f18]"></span>
+        </div>
+      </div>
+
+      <div class="p-6 md:p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-6">
+          <div class="flex flex-wrap justify-between items-start gap-2 border-b pb-4">
+            <div>
+              <h2 id="modalTitle" class="font-serif-luxury text-2xl md:text-3xl font-bold text-[#071f18]"></h2>
+              <p id="modalAddress" class="text-xs text-gray-500 mt-1"></p>
+            </div>
+            <div id="modalPrice" class="text-2xl font-bold text-[#0d3327]"></div>
+          </div>
+
+          <div class="flex gap-6 text-sm font-semibold text-gray-700">
+            <span id="modalBeds"></span>
+            <span id="modalBaths"></span>
+            <span id="modalSqm"></span>
+          </div>
+
+          <div>
+            <h4 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Executive Summary</h4>
+            <p id="modalDescription" class="text-sm text-gray-600 leading-relaxed"></p>
+          </div>
+
+          <div>
+            <h4 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Features & Amenities</h4>
+            <div id="modalAmenities" class="flex flex-wrap gap-2"></div>
+          </div>
+
+          <div class="bg-[#faf9f5] p-5 rounded-xl border border-gray-200">
+            <h4 class="font-serif-luxury text-lg font-bold text-[#071f18] mb-3">Meadow & Crest Structured Payment Calculator</h4>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+              <div>
+                <div class="flex justify-between text-xs font-semibold mb-1">
+                  <span>Initial Deposit</span>
+                  <span id="downPaymentLabel" class="text-[#0d3327] font-bold">30%</span>
+                </div>
+                <input id="downPaymentSlider" type="range" min="10" max="85" step="5" value="30" class="w-full" />
+              </div>
+              <div>
+                <label class="text-xs font-semibold block mb-1">Repayment Tenure</label>
+                <select id="tenureSelect" class="w-full text-xs border border-gray-300 rounded-lg px-2.5 py-2 bg-white">
+                  <option value="1">1 Year (Structured Installment)</option>
+                  <option value="5">5 Years Mortgage</option>
+                  <option value="10" selected>10 Years Mortgage</option>
+                  <option value="15">15 Years Mortgage</option>
+                  <option value="20">20 Years Mortgage</option>
+                </select>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4 pt-3 border-t border-gray-200 text-sm">
+              <div>
+                <span class="text-xs text-gray-500 block">Initial Deposit Required</span>
+                <strong id="calcDeposit" class="text-[#071f18] text-base"></strong>
+              </div>
+              <div>
+                <span class="text-xs text-gray-500 block">Estimated Monthly Payment</span>
+                <strong id="calcMonthly" class="text-[#0d3327] text-base"></strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 p-5 rounded-xl border border-gray-200 space-y-4 h-fit">
+          <div class="border-b pb-3">
+            <span class="text-[10px] uppercase tracking-widest text-[#b89225] font-bold">Assigned Advisor</span>
+            <h4 id="modalAdvisorName" class="font-bold text-base text-[#071f18]"></h4>
+            <p id="modalAdvisorRole" class="text-xs text-gray-500"></p>
+          </div>
+
+          <a id="modalWhatsAppBtn" href="#" target="_blank" class="block w-full text-center py-2.5 px-4 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold uppercase tracking-wider">
+            💬 Instant WhatsApp Chat
+          </a>
+
+          <form id="inspectionForm" class="space-y-3 pt-2">
+            <p class="text-xs font-bold uppercase tracking-wider text-gray-500">Book Private Inspection</p>
+            <input id="inspectName" type="text" required placeholder="Your Full Name" class="w-full text-xs px-3 py-2.5 rounded-lg border border-gray-300" />
+            <input id="inspectPhone" type="tel" required placeholder="Phone / WhatsApp Number" class="w-full text-xs px-3 py-2.5 rounded-lg border border-gray-300" />
+            <input id="inspectDate" type="date" required class="w-full text-xs px-3 py-2.5 rounded-lg border border-gray-300" />
+            <button type="submit" class="w-full py-2.5 rounded-lg bg-[#071f18] hover:bg-[#0d3327] text-[#d4af37] text-xs font-bold uppercase tracking-wider">
+              Request Private Viewing
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Saved Properties Drawer -->
+  <div id="savedDrawer" class="hidden fixed inset-0 z-50 bg-black/60 flex justify-end">
+    <div class="bg-white w-full max-w-md h-full p-6 flex flex-col justify-between overflow-y-auto">
+      <div>
+        <div class="flex justify-between items-center border-b pb-4 mb-4">
+          <h3 class="font-serif-luxury text-2xl font-bold text-[#071f18]">Saved Portfolio</h3>
+          <button onclick="toggleSavedDrawer()" class="text-gray-500 font-bold">✕</button>
+        </div>
+        <div id="savedListContainer" class="space-y-3"></div>
+      </div>
+      <button onclick="toggleSavedDrawer()" class="w-full py-2.5 bg-[#071f18] text-[#d4af37] rounded-lg text-xs font-bold uppercase">Continue Browsing</button>
+    </div>
+  </div>
+
+  <!-- List a Property Modal -->
+  <div id="listPropertyModal" class="hidden fixed inset-0 z-50 bg-black/75 flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-xl w-full p-6 md:p-8 shadow-2xl my-8">
+      <div class="flex justify-between items-center border-b pb-3 mb-4">
+        <div>
+          <span class="text-[10px] uppercase tracking-widest text-[#b89225] font-bold">Meadow & Crest Partner Portal</span>
+          <h3 class="font-serif-luxury text-2xl font-bold text-[#071f18]">Publish New Property Mandate</h3>
+        </div>
+        <button onclick="closeListModal()" class="text-gray-500 font-bold">✕</button>
+      </div>
+
+      <form id="addListingForm" class="space-y-3 text-xs">
+        <input id="newTitle" type="text" required placeholder="Property Title (e.g., 5 Bedroom Waterfront Villa)" class="w-full px-3 py-2.5 border rounded-lg" />
+        <div class="grid grid-cols-2 gap-3">
+          <select id="newCategory" class="px-3 py-2.5 border rounded-lg">
+            <option value="Buy">For Sale (Buy)</option>
+            <option value="Rent">For Rent (Annual)</option>
+            <option value="Short-Let">Short-Let</option>
+          </select>
+          <select id="newType" class="px-3 py-2.5 border rounded-lg">
+            <option value="Detached Duplex">Detached Duplex</option>
+            <option value="Villa">Villa</option>
+            <option value="Penthouse">Penthouse</option>
+            <option value="Luxury Apartment">Luxury Apartment</option>
+            <option value="Waterfront Mansion">Waterfront Mansion</option>
+          </select>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <select id="newLocation" class="px-3 py-2.5 border rounded-lg">
+            <option value="Ikoyi / Banana Island">Ikoyi / Banana Island</option>
+            <option value="Lekki Phase 1">Lekki Phase 1</option>
+            <option value="Victoria Island">Victoria Island</option>
+            <option value="Ikeja GRA">Ikeja GRA</option>
+            <option value="Maitama Abuja">Maitama Abuja</option>
+          </select>
+          <select id="newTitleDoc" class="px-3 py-2.5 border rounded-lg">
+            <option value="Governor's Consent">Governor's Consent</option>
+            <option value="Federal C of O">Federal C of O</option>
+            <option value="Lagos State C of O">Lagos State C of O</option>
+          </select>
+        </div>
+        <input id="newAddress" type="text" required placeholder="Full Street / Estate Address" class="w-full px-3 py-2.5 border rounded-lg" />
+        <div class="grid grid-cols-4 gap-2">
+          <input id="newPrice" type="number" required placeholder="Price (₦)" class="px-3 py-2.5 border rounded-lg col-span-2" />
+          <input id="newBeds" type="number" required placeholder="Beds" class="px-3 py-2.5 border rounded-lg" />
+          <input id="newBaths" type="number" required placeholder="Baths" class="px-3 py-2.5 border rounded-lg" />
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <input id="newSqm" type="number" required placeholder="Land Area (sqm)" class="px-3 py-2.5 border rounded-lg" />
+          <input id="newImage" type="url" placeholder="Image URL (optional)" class="px-3 py-2.5 border rounded-lg" />
+        </div>
+        <textarea id="newDesc" rows="3" required placeholder="Detailed executive description..." class="w-full px-3 py-2.5 border rounded-lg"></textarea>
+        <button type="submit" class="w-full py-3 rounded-lg bg-[#071f18] text-[#d4af37] font-bold uppercase tracking-wider">
+          Publish to Meadow & Crest Portfolio
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="hidden fixed bottom-5 right-5 z-50 bg-[#071f18] text-white border border-[#d4af37] px-5 py-3 rounded-xl shadow-xl text-xs font-medium">
+    <span id="toastMsg"></span>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-[#071f18] text-white/70 text-xs py-10 px-4 border-t border-[#d4af37]/30 mt-16">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+      <p>© 2026 Meadow & Crest Realty Limited (RC: ). All Rights Reserved.</p>
+      <div class="flex gap-6">
+        <a href="pages/about.html" class="hover:text-white">About Firm</a>
+        <a href="pages/advisors.html" class="hover:text-white">Wealth Advisors</a>
+        <a href="pages/contact.html" class="hover:text-white">Private Offices</a>
+        <a href="pages/admin.html" class="text-[#d4af37] hover:underline">Admin Dashboard</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Leaflet Map JS + App Modules -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/modules/currency.js"></script>
+  <script src="js/modules/calculator.js"></script>
+  <script src="js/modules/storage.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

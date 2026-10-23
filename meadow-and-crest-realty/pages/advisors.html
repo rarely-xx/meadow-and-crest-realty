@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Private Wealth Advisors | Meadow & Crest Realty Limited</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../css/styles.css" />
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Executive Top Bar -->
+  <div class="bg-[#071f18] text-white/80 text-xs py-2 px-4 border-b border-white/10">
+    <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-2">
+      <span>🏛️ <strong>Meadow & Crest Realty Limited</strong> — RC: • Ikoyi • Lekki Phase 1 • Victoria Island • Ikate • Osapa London • Maitama</span>
+      <div class="flex items-center gap-4">
+        <span>📞 +234 (0) 906 386 2966</span>
+        <span>✉️ workingonit@meadowandcrest.com</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="sticky top-0 z-30 bg-[#0d3327]/95 backdrop-blur-md text-white border-b border-[#d4af37]/30">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
+      <a href="../index.html" class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg bg-[#d4af37] text-[#071f18] flex items-center justify-center font-serif-luxury font-bold text-xl shadow">M&C</div>
+        <div>
+          <span class="font-serif-luxury text-xl md:text-2xl font-bold tracking-wide text-white block leading-none">MEADOW & CREST</span>
+          <span class="text-[10px] uppercase tracking-[0.25em] text-[#d4af37] block mt-0.5">Realty Limited</span>
+        </div>
+      </a>
+
+      <nav class="flex items-center gap-7 text-xs uppercase tracking-wider font-semibold">
+        <a href="../index.html" class="text-white/80 hover:text-[#d4af37] transition">Properties</a>
+        <a href="about.html" class="text-white/80 hover:text-[#d4af37] transition">About Firm</a>
+        <a href="advisors.html" class="text-[#d4af37] border-b-2 border-[#d4af37] pb-1">Wealth Advisors</a>
+        <a href="contact.html" class="text-white/80 hover:text-[#d4af37] transition">Private Offices</a>
+      </nav>
+
+      <a href="../index.html" class="px-4 py-2 rounded-lg bg-[#d4af37] text-[#071f18] font-bold text-xs uppercase tracking-wider">
+        Browse Mandates
+      </a>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-14 flex-1 w-full">
+    <div class="text-center max-w-2xl mx-auto mb-12">
+      <span class="text-xs uppercase tracking-widest text-[#b89225] font-bold">Executive Leadership</span>
+      <h1 class="font-serif-luxury text-4xl md:text-5xl font-bold text-[#071f18] mt-1">Meet Our Private Wealth Advisors</h1>
+      <p class="text-sm text-gray-600 mt-2">
+        Connect directly with a dedicated Meadow & Crest Realty Limited partner specializing in your preferred neighborhood.
+      </p>
+    </div>
+
+    <div id="advisorsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-7"></div>
+  </main>
+
+  <footer class="bg-[#071f18] text-white/70 text-xs py-8 px-4 text-center border-t border-[#d4af37]/30">
+    © 2026 Meadow & Crest Realty Limited (RC: ). All Rights Reserved.
+  </footer>
+
+  <script src="../js/data.js"></script>
+  <script>
+    const grid = document.getElementById("advisorsGrid");
+    grid.innerHTML = ADVISORS_DATA.map(adv => `
+      <div class="bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-xl transition flex flex-col">
+        <img src="${adv.image}" alt="${adv.name}" class="w-full h-64 object-cover" />
+        <div class="p-5 flex-1 flex flex-col justify-between">
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-widest text-[#b89225]">${adv.office}</span>
+            <h3 class="font-serif-luxury text-2xl font-bold text-[#071f18] mt-0.5">${adv.name}</h3>
+            <p class="text-xs font-semibold text-[#0d3327]">${adv.role}</p>
+            <p class="text-xs text-gray-500 mt-2 leading-relaxed">${adv.specialization}</p>
+            <div class="flex justify-between text-[11px] font-semibold text-gray-700 bg-[#faf9f5] p-2.5 rounded-lg my-4 border border-gray-100">
+              <span>Experience: ${adv.experience}</span>
+              <span class="text-[#0d3327]">${adv.volume}</span>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <a href="https://wa.me/${adv.phone}?text=${encodeURIComponent('Good day ' + adv.name + ', I would like to schedule a private real estate consultation with Meadow & Crest Realty Limited.')}" target="_blank" class="block w-full text-center py-2.5 rounded-lg bg-[#0d3327] hover:bg-[#071f18] text-[#d4af37] text-xs font-bold uppercase tracking-wider transition">
+              💬 WhatsApp Advisor
+            </a>
+            <a href="mailto:${adv.email}" class="block w-full text-center py-2 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 text-xs font-semibold">
+              ✉️ ${adv.email}
+            </a>
+          </div>
+        </div>
+      </div>
+    `).join("");
+  </script>
+</body>
+</html>

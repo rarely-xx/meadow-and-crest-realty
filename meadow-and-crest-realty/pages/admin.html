@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Executive Admin Dashboard | Meadow & Crest Realty Limited</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../css/styles.css" />
+</head>
+<body class="min-h-screen flex flex-col bg-[#f4f3ee]">
+
+  <!-- Secure Executive Login Gate Modal -->
+  <div id="authModal" class="fixed inset-0 z-50 bg-[#071f18]/90 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-8 shadow-2xl border border-[#d4af37]/40 text-center">
+      <div class="w-14 h-14 mx-auto rounded-xl bg-[#071f18] text-[#d4af37] flex items-center justify-center font-serif-luxury font-bold text-2xl mb-4 shadow">
+        M&C
+      </div>
+      <span class="text-[10px] uppercase tracking-[0.25em] text-[#b89225] font-bold">Restricted Access</span>
+      <h2 class="font-serif-luxury text-3xl font-bold text-[#071f18] mt-1">Executive Authentication</h2>
+      <p class="text-xs text-gray-500 mt-1 mb-6">Enter your authorized Meadow & Crest executive passcode to manage the property inventory.</p>
+
+      <form id="loginForm" class="space-y-4 text-xs text-left">
+        <div>
+          <label class="font-bold text-gray-700 block mb-1">Executive Passcode / PIN</label>
+          <input id="passcodeInput" type="password" required placeholder="Enter passcode (Default: MC-2026-EXEC)" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#0d3327]" />
+        </div>
+        <button type="submit" class="w-full py-3.5 rounded-lg bg-[#071f18] hover:bg-[#0d3327] text-[#d4af37] font-bold uppercase tracking-wider transition">
+          Authenticate Session
+        </button>
+        <p id="loginError" class="hidden text-red-600 text-center font-semibold pt-1">Incorrect passcode. Access denied.</p>
+      </form>
+
+      <div class="mt-6 pt-4 border-t border-gray-100 flex justify-between items-center text-xs">
+        <a href="../index.html" class="text-gray-500 hover:text-[#071f18]">&larr; Return to Live Website</a>
+        <span class="text-gray-400">RC: </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Top Header -->
+  <header class="bg-[#071f18] text-white border-b border-[#d4af37]/40 sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <a href="../index.html" class="w-10 h-10 rounded-lg bg-[#d4af37] text-[#071f18] flex items-center justify-center font-serif-luxury font-bold text-xl">M&C</a>
+        <div>
+          <span class="font-serif-luxury text-xl font-bold tracking-wide text-white block leading-none">MEADOW & CREST</span>
+          <span class="text-[10px] uppercase tracking-[0.25em] text-[#d4af37] block mt-0.5">Executive Admin Control Panel</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3 text-xs">
+        <a href="../index.html" class="px-3.5 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white font-semibold">
+          &larr; View Live Website
+        </a>
+        <button onclick="openAdminCreateModal()" class="px-4 py-2 rounded-lg bg-[#d4af37] hover:bg-[#b89225] text-[#071f18] font-bold uppercase tracking-wider">
+          + Add New Mandate
+        </button>
+        <button onclick="handleResetDefault()" class="px-3 py-2 rounded-lg border border-red-400/50 text-red-300 hover:bg-red-950/50 font-semibold">
+          Reset Default Data
+        </button>
+        <button onclick="handleLogout()" class="px-3 py-2 rounded-lg bg-red-800 text-white font-semibold">
+          Lock Session
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-8 flex-1 w-full space-y-8">
+    <!-- KPI Summary Row -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+        <span class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Total Active Mandates</span>
+        <p id="statTotalCount" class="font-serif-luxury text-4xl font-bold text-[#071f18] mt-1">0</p>
+        <span class="text-xs text-emerald-700 font-medium">Live on Portfolio & Map</span>
+      </div>
+      <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+        <span class="text-[11px] font-bold uppercase tracking-wider text-gray-400">For Sale Portfolio Value</span>
+        <p id="statSaleValue" class="font-serif-luxury text-4xl font-bold text-[#0d3327] mt-1">₦0</p>
+        <span class="text-xs text-gray-500">Combined Acquisition Value</span>
+      </div>
+      <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+        <span class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Rent & Short-Let Mandates</span>
+        <p id="statLeaseCount" class="font-serif-luxury text-4xl font-bold text-[#071f18] mt-1">0</p>
+        <span class="text-xs text-gray-500">Annual Lease & Executive Suites</span>
+      </div>
+      <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+        <span class="text-[11px] font-bold uppercase tracking-wider text-gray-400">Scheduled Inspections</span>
+        <p id="statInspections" class="font-serif-luxury text-4xl font-bold text-[#b89225] mt-1">0</p>
+        <span class="text-xs text-gray-500">Client Viewing Requests</span>
+      </div>
+    </div>
+
+    <!-- Property Inventory Management Table -->
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+      <div class="p-5 border-b border-gray-200 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h2 class="font-serif-luxury text-2xl font-bold text-[#071f18]">Property Portfolio Inventory</h2>
+          <p class="text-xs text-gray-500">Edit prices, update land titles, or remove sold properties. Changes reflect immediately on the homepage and map.</p>
+        </div>
+        <input id="adminSearch" type="text" placeholder="Filter by title or location..." class="text-xs border border-gray-300 rounded-lg px-3.5 py-2 w-64" />
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="bg-[#faf9f5] text-gray-500 uppercase tracking-wider border-b">
+              <th class="py-3.5 px-4">Property</th>
+              <th class="py-3.5 px-4">Location</th>
+              <th class="py-3.5 px-4">Category</th>
+              <th class="py-3.5 px-4">Title Doc</th>
+              <th class="py-3.5 px-4">Price (NGN)</th>
+              <th class="py-3.5 px-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="adminTableBody" class="divide-y divide-gray-100"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Incoming Private Inspection Requests -->
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+      <div class="p-5 border-b border-gray-200">
+        <h2 class="font-serif-luxury text-2xl font-bold text-[#071f18]">Private Inspection Requests</h2>
+        <p class="text-xs text-gray-500">Bookings submitted by prospective buyers and tenants on the website.</p>
+      </div>
+      <div id="inspectionTableContainer" class="p-5"></div>
+    </div>
+  </main>
+
+  <!-- Create / Edit Property Modal -->
+  <div id="adminEditModal" class="hidden fixed inset-0 z-50 bg-black/75 flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-xl w-full p-6 md:p-8 shadow-2xl my-8">
+      <div class="flex justify-between items-center border-b pb-3 mb-4">
+        <h3 id="adminModalHeading" class="font-serif-luxury text-2xl font-bold text-[#071f18]">Edit Property Mandate</h3>
+        <button onclick="closeAdminModal()" class="text-gray-500 font-bold">✕</button>
+      </div>
+
+      <form id="adminPropertyForm" class="space-y-3 text-xs">
+        <input id="editId" type="hidden" />
+        <div>
+          <label class="font-bold text-gray-600 block mb-1">Property Title</label>
+          <input id="editTitle" type="text" required class="w-full px-3 py-2 border rounded-lg" />
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="font-bold text-gray-600 block mb-1">Category</label>
+            <select id="editCategory" class="w-full px-3 py-2 border rounded-lg">
+              <option value="Buy">Buy (For Sale)</option>
+              <option value="Rent">Rent (Annual Lease)</option>
+              <option value="Short-Let">Short-Let</option>
+            </select>
+          </div>
+          <div>
+            <label class="font-bold text-gray-600 block mb-1">Property Type</label>
+            <select id="editType" class="w-full px-3 py-2 border rounded-lg">
+              <option value="Detached Duplex">Detached Duplex</option>
+              <option value="Waterfront Mansion">Waterfront Mansion</option>
+              <option value="Villa">Villa</option>
+              <option value="Penthouse">Penthouse</option>
+              <option value="Luxury Apartment">Luxury Apartment</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="font-bold text-gray-600 block mb-1">Location District</label>
+            <select id="editLocation" class="w-full px-3 py-2 border rounded-lg">
+              <option value="Ikoyi / Banana Island">Ikoyi / Banana Island</option>
+              <option value="Lekki Phase 1">Lekki Phase 1</option>
+              <option value="Victoria Island">Victoria Island</option>
+              <option value="Ikeja GRA">Ikeja GRA</option>
+              <option value="Maitama Abuja">Maitama Abuja</option>
+            </select>
+          </div>
+          <div>
+            <label class="font-bold text-gray-600 block mb-1">Verified Land Title</label>
+            <select id="editTitleDoc" class="w-full px-3 py-2 border rounded-lg">
+              <option value="Governor's Consent">Governor's Consent</option>
+              <option value="Federal C of O">Federal C of O</option>
+              <option value="Lagos State C of O">Lagos State C of O</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="font-bold text-gray-600 block mb-1">Street / Estate Address</label>
+          <input id="editAddress" type="text" required class="w-full px-3 py-2 border rounded-lg" />
+        </div>
+
+        <div class="grid grid-cols-4 gap-2">
+          <div class="col-span-2">
+            <label class="font-bold text-gray-600 block mb-1">Price in Naira (₦)</label>
+            <input id="editPrice" type="number" required class="w-full px-3 py-2 border rounded-lg font-bold text-[#0d3327]" />
+          </div>
+          <div>
+            <label class="font-bold text-gray-600 block mb-1">Bedrooms</label>
+            <input id="editBeds" type="number" required class="w-full px-3 py-2 border rounded-lg" />
+          </div>
+          <div>
+            <label class="font-bold text-gray-600 block mb-1">Bathrooms</label>
+            <input id="editBaths" type="number" required class="w-full px-3 py-2 border rounded-lg" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2">
+          <div>
+            <label class="font-bold text-gray-600 block mb-1">Area (sqm)</label>
+            <input id="editSqm" type="number" required class="w-full px-3 py-2 border rounded-lg" />
+          </div>
+          <div>
+            <label class="font-bold text-gray-600 block mb-1">Latitude</label>
+            <input id="editLat" type="number" step="any" required class="w-full px-3 py-2 border rounded-lg" />
+          </div>
+          <div>
+            <label class="font-bold text-gray-600 block mb-1">Longitude</label>
+            <input id="editLng" type="number" step="any" required class="w-full px-3 py-2 border rounded-lg" />
+          </div>
+        </div>
+
+        <div>
+          <label class="font-bold text-gray-600 block mb-1">Primary Image URL</label>
+          <input id="editImage" type="url" required class="w-full px-3 py-2 border rounded-lg" />
+        </div>
+
+        <div>
+          <label class="font-bold text-gray-600 block mb-1">Executive Summary</label>
+          <textarea id="editDesc" rows="3" required class="w-full px-3 py-2 border rounded-lg"></textarea>
+        </div>
+
+        <button type="submit" class="w-full py-3 rounded-lg bg-[#071f18] hover:bg-[#0d3327] text-[#d4af37] font-bold uppercase tracking-wider">
+          Save Mandate Changes
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script src="../js/data.js"></script>
+  <script src="../js/modules/currency.js"></script>
+  <script src="../js/modules/storage.js"></script>
+  <script>
+    const EXEC_PASSCODE = "MC-2026-EXEC"; // Change this passcode as desired
+    let adminProperties = getAllProperties();
+
+    document.addEventListener("DOMContentLoaded", () => {
+      checkAuthSession();
+
+      document.getElementById("loginForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const inputVal = document.getElementById("passcodeInput").value;
+        const errEl = document.getElementById("loginError");
+
+        if (inputVal === EXEC_PASSCODE) {
+          sessionStorage.setItem("mc_exec_auth", "true");
+          document.getElementById("authModal").classList.add("hidden");
+          renderAdminDashboard();
+        } else {
+          errEl.classList.remove("hidden");
+          setTimeout(() => errEl.classList.add("hidden"), 3000);
+        }
+      });
+
+      document.getElementById("adminSearch").addEventListener("input", renderAdminDashboard);
+      document.getElementById("adminPropertyForm").addEventListener("submit", handleSaveMandate);
+
+      document.getElementById("editLocation").addEventListener("change", (e) => {
+        const coords = LOCATION_COORDS[e.target.value];
+        if (coords && !document.getElementById("editId").value) {
+          document.getElementById("editLat").value = coords.lat;
+          document.getElementById("editLng").value = coords.lng;
+        }
+      });
+    });
+
+    function checkAuthSession() {
+      const isAuthed = sessionStorage.getItem("mc_exec_auth");
+      if (isAuthed === "true") {
+        document.getElementById("authModal").classList.add("hidden");
+        renderAdminDashboard();
+      } else {
+        document.getElementById("authModal").classList.remove("hidden");
+      }
+    }
+
+    function handleLogout() {
+      sessionStorage.removeItem("mc_exec_auth");
+      location.reload();
+    }
+
+    function renderAdminDashboard() {
+      adminProperties = getAllProperties();
+      const inspections = getInspections();
+      const query = document.getElementById("adminSearch").value.toLowerCase();
+
+      document.getElementById("statTotalCount").textContent = adminProperties.length;
+      const buyVolume = adminProperties
+        .filter(p => p.category === "Buy")
+        .reduce((sum, p) => sum + Number(p.priceNGN || 0), 0);
+      document.getElementById("statSaleValue").innerHTML = formatPrice(buyVolume);
+      document.getElementById("statLeaseCount").textContent = adminProperties.filter(p => p.category !== "Buy").length;
+      document.getElementById("statInspections").textContent = inspections.length;
+
+      const filtered = adminProperties.filter(
+        p => p.title.toLowerCase().includes(query) || p.location.toLowerCase().includes(query)
+      );
+
+      const tbody = document.getElementById("adminTableBody");
+      tbody.innerHTML = filtered.map(p => `
+        <tr class="hover:bg-gray-50 transition">
+          <td class="py-3.5 px-4 flex items-center gap-3">
+            <img src="${p.images[0]}" class="w-12 h-12 rounded-lg object-cover border" />
+            <div>
+              <p class="font-bold text-[#071f18] text-sm">${p.title}</p>
+              <p class="text-[11px] text-gray-500">${p.beds} Beds • ${p.sqm} sqm</p>
+            </div>
+          </td>
+          <td class="py-3.5 px-4 font-medium text-gray-700">${p.location}</td>
+          <td class="py-3.5 px-4">
+            <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#071f18] text-[#d4af37]">${p.category}</span>
+          </td>
+          <td class="py-3.5 px-4 text-gray-600">${p.titleDoc}</td>
+          <td class="py-3.5 px-4 font-bold text-[#0d3327] text-sm">₦${Number(p.priceNGN).toLocaleString()}</td>
+          <td class="py-3.5 px-4 text-right space-x-2">
+            <button onclick="openAdminEditModal('${p.id}')" class="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-800 hover:bg-emerald-100 font-semibold">
+              ✎ Edit / Price
+            </button>
+            <button onclick="handleDeleteProperty('${p.id}')" class="px-3 py-1.5 rounded-lg bg-red-50 text-red-700 hover:bg-red-100 font-semibold">
+              🗑 Delete
+            </button>
+          </td>
+        </tr>
+      `).join("");
+
+      const inspContainer = document.getElementById("inspectionTableContainer");
+      if (inspections.length === 0) {
+        inspContainer.innerHTML = `<p class="text-xs text-gray-500 text-center py-6">No inspection requests booked yet. Book a viewing on any property card on the homepage to test it.</p>`;
+      } else {
+        inspContainer.innerHTML = `
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            ${inspections.map(item => `
+              <div class="p-4 rounded-xl border border-gray-200 bg-[#faf9f5] flex justify-between items-center">
+                <div>
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-[#b89225]">${item.location} •${item.date}</span>
+                  <h4 class="font-bold text-sm text-[#071f18]">${item.clientName} (${item.clientPhone})</h4>
+                  <p class="text-xs text-gray-600 mt-0.5">Property: <strong>${item.propertyTitle}</strong></p>
+                </div>
+                <button onclick="removeInspection('${item.id}')" class="text-xs text-red-600 font-semibold hover:underline">Clear</button>
+              </div>
+            `).join("")}
+          </div>
+        `;
+      }
+    }
+
+    function openAdminCreateModal() {
+      document.getElementById("adminModalHeading").textContent = "Add New Property Mandate";
+      document.getElementById("adminPropertyForm").reset();
+      document.getElementById("editId").value = "";
+      document.getElementById("editLat").value = 6.4646;
+      document.getElementById("editLng").value = 3.4508;
+      document.getElementById("editImage").value = "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=85";
+      document.getElementById("adminEditModal").classList.remove("hidden");
+    }
+
+    function openAdminEditModal(id) {
+      const prop = adminProperties.find(p => p.id === id);
+      if (!prop) return;
+
+      document.getElementById("adminModalHeading").textContent = "Edit Mandate & Pricing";
+      document.getElementById("editId").value = prop.id;
+      document.getElementById("editTitle").value = prop.title;
+      document.getElementById("editCategory").value = prop.category;
+      document.getElementById("editType").value = prop.type;
+      document.getElementById("editLocation").value = prop.location;
+      document.getElementById("editTitleDoc").value = prop.titleDoc;
+      document.getElementById("editAddress").value = prop.address;
+      document.getElementById("editPrice").value = prop.priceNGN;
+      document.getElementById("editBeds").value = prop.beds;
+      document.getElementById("editBaths").value = prop.baths;
+      document.getElementById("editSqm").value = prop.sqm;
+      document.getElementById("editLat").value = prop.lat || 6.451;
+      document.getElementById("editLng").value = prop.lng || 3.445;
+      document.getElementById("editImage").value = prop.images[0];
+      document.getElementById("editDesc").value = prop.description;
+
+      document.getElementById("adminEditModal").classList.remove("hidden");
+    }
+
+    function closeAdminModal() {
+      document.getElementById("adminEditModal").classList.add("hidden");
+    }
+
+    function handleSaveMandate(e) {
+      e.preventDefault();
+      const existingId = document.getElementById("editId").value;
+
+      const payload = {
+        title: document.getElementById("editTitle").value,
+        category: document.getElementById("editCategory").value,
+        type: document.getElementById("editType").value,
+        location: document.getElementById("editLocation").value,
+        titleDoc: document.getElementById("editTitleDoc").value,
+        address: document.getElementById("editAddress").value,
+        priceNGN: parseInt(document.getElementById("editPrice").value),
+        beds: parseInt(document.getElementById("editBeds").value),
+        baths: parseInt(document.getElementById("editBaths").value),
+        sqm: parseInt(document.getElementById("editSqm").value),
+        lat: parseFloat(document.getElementById("editLat").value),
+        lng: parseFloat(document.getElementById("editLng").value),
+        images: [document.getElementById("editImage").value],
+        description: document.getElementById("editDesc").value
+      };
+
+      if (existingId) {
+        updatePropertyById(existingId, payload);
+      } else {
+        saveCustomProperty({
+          id: "mc-" + Date.now(),
+          ...payload,
+          featured: true,
+          amenities: ["Swimming Pool", "24/7 Power", "BQ", "Smart Home"],
+          advisor: {
+            name: "Iyanu",
+            role: "Senior Private Wealth Advisor",
+            phone: "2349063862966"
+          }
+        });
+      }
+
+      closeAdminModal();
+      renderAdminDashboard();
+    }
+
+    function handleDeleteProperty(id) {
+      if (confirm("Are you sure you want to remove this property mandate from Meadow & Crest Realty Limited?")) {
+        deletePropertyById(id);
+        renderAdminDashboard();
+      }
+    }
+
+    function handleResetDefault() {
+      if (confirm("Restore the default 6 Meadow & Crest luxury listings?")) {
+        resetPropertiesToDefault();
+        renderAdminDashboard();
+      }
+    }
+
+    function removeInspection(id) {
+      deleteInspectionBooking(id);
+      renderAdminDashboard();
+    }
+  </script>
+</body>
+</html>
